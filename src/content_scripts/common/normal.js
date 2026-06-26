@@ -743,6 +743,10 @@ function createNormal(insert) {
         }
     };
 
+    self.arrangeTabs = function() {
+        RUNTIME("arrangeTabs", {});
+    };
+
     self.moveTab = function(pos) {
         RUNTIME('moveTab', {
             position: pos

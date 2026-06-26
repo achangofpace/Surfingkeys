@@ -882,6 +882,9 @@ export default function(api, clipboard, insert, normal, hints, visual, front, br
         mapkey(';gw', '#3Gather all tabs into current window',  function() {
             RUNTIME("gatherWindows");
         });
+        mapkey(";atu", "Arrange this window's Tabs by URL", () => {
+            RUNTIME('arrangeTabs');
+        });
         mapkey('<<', '#3Move current tab to left', function() {
             RUNTIME('moveTab', {
                 step: -1

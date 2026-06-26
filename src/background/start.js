@@ -1511,6 +1511,18 @@ function start(browser) {
             }
         });
     };
+    self.arrangeTabs = function(message, sender, sendResponse) {
+        chrome.tabs.query(
+            {windowId: sender.tab.windowId}, function(tabs) {
+            const sorted = [...tabs].sort((a, b) => {
+                const hostCmp = new URL(a.url).hostname.localeCompare(
+                    new URL(b.url).hostname,
+                );
+                return hostCmp || a.url.localeCompare(b.url);
+            });
+            chrome.tabs.move(sorted.map((t) => t.id), { index: -1 });
+        });
+    };
     self.moveTab = function(message, sender, sendResponse) {
         chrome.tabs.query({
             windowId: sender.tab.windowId
