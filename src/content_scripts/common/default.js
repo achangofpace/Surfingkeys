@@ -882,8 +882,15 @@ export default function(api, clipboard, insert, normal, hints, visual, front, br
         mapkey(';gw', '#3Gather all tabs into current window',  function() {
             RUNTIME("gatherWindows");
         });
-        mapkey(";atu", "Arrange this window's Tabs by URL", () => {
-            RUNTIME('arrangeTabs');
+        mapkey(";atr", "#3Arrange this window's Tabs by access Recency", () => {
+            console.log("me first of course");
+            RUNTIME("arrangeTabs", { sort_by: "recency", ascending: true });
+        });
+        mapkey(";att", "#3Arrange this window's Tabs by Title", () => {
+            RUNTIME("arrangeTabs", { sort_by: "title", ascending: true });
+        });
+        mapkey(";atu", "#3Arrange this window's Tabs by URL", () => {
+            RUNTIME("arrangeTabs", { sort_by: "url", ascending: true });
         });
         mapkey('<<', '#3Move current tab to left', function() {
             RUNTIME('moveTab', {

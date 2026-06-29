@@ -743,8 +743,9 @@ function createNormal(insert) {
         }
     };
 
-    self.arrangeTabs = function() {
-        RUNTIME("arrangeTabs", {});
+    self.arrangeTabs = function(sort_by, ascending) {
+        console.log("did you call me?");
+        RUNTIME("arrangeTabs", { sort_by: sort_by, ascending: ascending });
     };
 
     self.moveTab = function(pos) {
