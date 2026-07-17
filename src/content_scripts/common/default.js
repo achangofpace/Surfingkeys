@@ -883,7 +883,6 @@ export default function(api, clipboard, insert, normal, hints, visual, front, br
             RUNTIME("gatherWindows");
         });
         mapkey(";atr", "#3Arrange this window's Tabs by access Recency", () => {
-            console.log("me first of course");
             RUNTIME("arrangeTabs", { sort_by: "recency", ascending: true });
         });
         mapkey(";att", "#3Arrange this window's Tabs by Title", () => {

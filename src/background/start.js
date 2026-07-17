@@ -1,5 +1,6 @@
 import {
     filterByTitleOrUrl,
+    sortBrowserTabs
 } from '../common/utils.js';
 import llmClients from './llm.js';
 
@@ -1512,7 +1513,6 @@ function start(browser) {
         });
     };
     self.arrangeTabs = function(message, sender, sendResponse) {
-        console.log("did I call you?");
         chrome.tabs.query(
             { windowId: sender.tab.windowId }, function(tabs) {
             const sorted = sortBrowserTabs(
