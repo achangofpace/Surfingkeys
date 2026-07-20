@@ -743,10 +743,6 @@ function createNormal(insert) {
         }
     };
 
-    self.arrangeTabs = function(sort_by, ascending) {
-        RUNTIME("arrangeTabs", { sort_by: sort_by, ascending: ascending });
-    };
-
     self.moveTab = function(pos) {
         RUNTIME('moveTab', {
             position: pos
