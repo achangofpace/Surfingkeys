@@ -41,16 +41,16 @@ function filterByTitleOrUrl(urls, query, caseSensitive) {
  * @param {boolean} asc sort direction - ascending or descending
  * @returns {Number} A negative number if `tab_a` comes before `tab_b`, 0 if they're the same value, and a positive number if `tab_b` comes before `tab_a`
  */
-const TabSort = {
-    sortByAccessRecency(tab_a, tab_b, asc = true) {
+const TabComparison = {
+    compareAccessRecency(tab_a, tab_b, asc = true) {
         const direction = asc ? 1 : -1;
         return direction * (tab_a.lastAccessed - tab_b.lastAccessed);
     },
-    sortByTitle(tab_a, tab_b, asc = true) {
+    compareTitle(tab_a, tab_b, asc = true) {
         const direction = asc ? 1 : -1;
         return direction * tab_a.title.localeCompare(tab_b.title);
     },
-    sortByURL(tab_a, tab_b, asc = true) {
+    compareURL(tab_a, tab_b, asc = true) {
         const direction = asc ? 1 : -1;
         const hostCmp = tab_a.hostname.localeCompare(tab_b.hostname);
         return direction * hostCmp;
@@ -66,9 +66,9 @@ function getTabHostname(tab) {
 }
 
 const SortHandlers = {
-    recency: TabSort.sortByAccessRecency,
-    title: TabSort.sortByTitle,
-    url: TabSort.sortByURL,
+    recency: TabComparison.compareAccessRecency,
+    title: TabComparison.compareTitle,
+    url: TabComparison.compareURL,
 };
 
 /**
