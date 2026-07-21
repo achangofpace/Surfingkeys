@@ -53,13 +53,20 @@ const TabComparison = {
     compareURL(tab_a, tab_b, asc = true) {
         const direction = asc ? 1 : -1;
         const hostCmp = tab_a.hostname.localeCompare(tab_b.hostname);
-        return direction * hostCmp;
+        return direction * (hostCmp !== 0 ? hostCmp : tab_a.url.localeCompare(tab_b.url));
     },
 };
 
 function getTabHostname(tab) {
     try {
-        return new URL(tab.url).hostname;
+        const hostname = new URL(tab.url).hostname;
+        if (hostname === "") {
+            if (tab.url.startsWith("about:")) {
+                return "about:"
+            }
+            return tab.url;
+        }
+        return hostname;
     } catch {
         return tab.url;
     }
