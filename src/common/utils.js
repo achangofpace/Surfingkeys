@@ -62,9 +62,12 @@ function getTabHostname(tab) {
         const hostname = new URL(tab.url).hostname;
         if (hostname === "") {
             if (tab.url.startsWith("about:")) {
-                return "about:"
+                return "about-firefox"
+            } else if (tab.url.startsWith("chrome://")) {
+                return "about-chrome"
+            } else {
+                return tab.url;
             }
-            return tab.url;
         }
         return hostname;
     } catch {
