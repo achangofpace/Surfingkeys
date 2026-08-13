@@ -1,6 +1,15 @@
 import {
     filterByTitleOrUrl,
-    sortBrowserTabs
+    getTabGroups,
+    queryTabGroups,
+    queryTabs,
+    moveTabGroups,
+    moveTabs,
+    MoveToOptions,
+    sortBrowserTabs,
+    sortBrowserTabGroups,
+    DEFAULT_OPTIONS_UNGROUPED_TABS,
+    DEFAULT_OPTIONS_TAB_GROUPS
 } from '../common/utils.js';
 import llmClients from './llm.js';
 
@@ -796,42 +805,46 @@ function start(browser) {
     self.collapseGroup = function(message, sender, sendResponse) {
         chrome.tabGroups.update(message.groupId, {collapsed: message.collapsed});
     };
-    self.getTabGroups = function(message, sender, sendResponse) {
-        chrome.tabGroups.query({}, function(groups) {
-            let activeGroup = -1;
-            // retrieve all tabs of each group
-            chrome.tabs.query({}, function(tabs) {
-                const tabsInGroup = {};
-                tabs.forEach(function(tab) {
-                    if (tab.groupId && tab.groupId !== (chrome.tabGroups?.TAB_GROUP_ID_NONE ?? -1)) {
-                        if (!tabsInGroup[tab.groupId]) {
-                            tabsInGroup[tab.groupId] = [];
-                        }
-                        if (tab.id === sender.tab.id) {
-                            activeGroup = tab.groupId;
-                        }
-                        tabsInGroup[tab.groupId].push({
-                            id: tab.id,
-                            title: tab.title,
-                            url: tab.url,
-                            favIconUrl: tab.favIconUrl,
-                            active: tab.active,
-                            index: tab.index
-                        });
-                    }
-                });
-
-                groups = groups.filter((g) => !g.hermit);
-                groups.forEach(function(group) {
-                    group.tabs = tabsInGroup[group.id] || [];
-                    group.active = group.id === activeGroup;
-                });
-
-                _response(message, sendResponse, {
-                    groups: groups
-                });
-            });
+    self.getTabGroups = async function(message, sender, sendResponse) {
+        const groups = await getTabGroups();
+        _response(message, sendResponse, {
+            groups: groups
         });
+        // chrome.tabGroups.query({}, function(groups) {
+        //     let activeGroup = -1;
+        //     // retrieve all tabs of each group
+        //     chrome.tabs.query({}, function(tabs) {
+        //         const tabsInGroup = {};
+        //         tabs.forEach(function(tab) {
+        //             if (tab.groupId && tab.groupId !== (chrome.tabGroups?.TAB_GROUP_ID_NONE ?? -1)) {
+        //                 if (!tabsInGroup[tab.groupId]) {
+        //                     tabsInGroup[tab.groupId] = [];
+        //                 }
+        //                 if (tab.id === sender.tab.id) {
+        //                     activeGroup = tab.groupId;
+        //                 }
+        //                 tabsInGroup[tab.groupId].push({
+        //                     id: tab.id,
+        //                     title: tab.title,
+        //                     url: tab.url,
+        //                     favIconUrl: tab.favIconUrl,
+        //                     active: tab.active,
+        //                     index: tab.index
+        //                 });
+        //             }
+        //         });
+
+        //         groups = groups.filter((g) => !g.hermit);
+        //         groups.forEach(function(group) {
+        //             group.tabs = tabsInGroup[group.id] || [];
+        //             group.active = group.id === activeGroup;
+        //         });
+
+        //         _response(message, sendResponse, {
+        //             groups: groups
+        //         });
+        //     });
+        // });
     };
     self.togglePinTab = function(message, sender, sendResponse) {
         getActiveTab(function(tab) {
@@ -1512,16 +1525,83 @@ function start(browser) {
             }
         });
     };
-    self.arrangeTabs = function(message, sender, sendResponse) {
-        chrome.tabs.query(
-            { windowId: sender.tab.windowId }, function(tabs) {
-            const sorted = sortBrowserTabs(
-                tabs,
-                message.sort_by,
-                message.ascending
-            );
-            chrome.tabs.move(sorted.map((t) => t.id), { index: -1 });
-        });
+    self.arrangeTabs = function (message, sender, sendResponse) {
+        const ungrouped_tabs_options = message.ungrouped_tabs || DEFAULT_OPTIONS_UNGROUPED_TABS;
+        const tab_groups_options = message.tab_groups || DEFAULT_OPTIONS_TAB_GROUPS;
+        try {
+            // if sender.tab in a tab group, only sort tabs inside group
+            if (sender.tab.groupId !== -1) {
+                // return chrome.tabs.query({groupId: sender.tab.groupId}, function (current_group_tabs) {
+                //     const sorted_group = sortBrowserTabs(
+                //         current_group_tabs,
+                //         ungrouped_tabs_options
+                //     );
+                //     chrome.tabs.move(
+                //         sorted_group.map((t) => t.id),
+                //         { index: -1 }
+                //     );
+                // });
+                // chrome.tabs.query({groupid: sender.tab.groupid})
+                queryTabs({groupid: sender.tab.groupid})
+                .then((group_tabs) => {
+                    const sorted_group = sortBrowserTabs(
+                        group_tabs,
+                        ungrouped_tabs_options
+                    );
+                    // chrome.tabs.move(
+                    moveTabs(
+                        sorted_group.map((t) => t.id),
+                        { index: -1 }
+                    );
+                });
+                return;
+            }
+            // else sort all tabs and tab groups in current window,
+            // preserving order inside of tab groups
+
+            // Promise.all([
+            //     chrome.tabs.query({
+            //         windowId: sender.tab.windowId,
+            //         groupId: -1
+            //     }),
+            //     chrome.tabGroups.query({ windowId: sender.tab.windowId })
+            // ])
+            Promise.all([
+                queryTabs({windowId: sender.tab.windowId, groupId: -1}),
+                getTabGroups(sender.id)
+            ])
+            .then(([ungrouped_tabs, tab_groups]) => {
+                const sorted_tabs = sortBrowserTabs(
+                    ungrouped_tabs,
+                    ungrouped_tabs_options
+                );
+                const sorted_tabs_ids = sorted_tabs.map((tab) => tab.id);
+                if (tab_groups.length === 0) {
+                    return moveTabs(sorted_tabs_ids, { index: -1 });
+                }
+                sortBrowserTabGroups(
+                    tab_groups,
+                    tab_groups_options
+                ).then((sorted_tab_groups) => {
+                    const sorted_tab_groups_ids = sorted_tab_groups.map((group) => group.id);
+                    if (tab_groups_options.move_to === MoveToOptions.FRONT) {
+                        moveTabGroups(sorted_tab_groups_ids, { index: -1 })
+                        .then(() => {
+                            return moveTabs(sorted_tabs_ids, { index: -1 });
+                        });
+                    } else if (tab_groups_options.move_to === MoveToOptions.BACK) {
+                        moveTabs(sorted_tabs_ids, { index: -1 })
+                        .then(() => {
+                            return moveTabGroups(sorted_tab_groups_ids, { index: -1 });
+                        });
+                    }
+                    return;
+                });
+            });
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
     };
     self.moveTab = function(message, sender, sendResponse) {
         chrome.tabs.query({

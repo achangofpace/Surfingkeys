@@ -1,6 +1,10 @@
 import { RUNTIME, dispatchSKEvent, runtime } from './runtime.js';
 import KeyboardUtils from './keyboardUtils';
 import {
+    SortByOptions,
+    MoveToOptions
+} from '../../common/utils.js';
+import {
     actionWithSelectionPreserved,
     getBrowserName,
     getCssSelectorsOfEditable,
@@ -883,13 +887,51 @@ export default function(api, clipboard, insert, normal, hints, visual, front, br
             RUNTIME("gatherWindows");
         });
         mapkey(";atr", "#3Arrange this window's Tabs by access Recency", () => {
-            RUNTIME("arrangeTabs", { sort_by: "recency", ascending: true });
+            RUNTIME("arrangeTabs", {
+                ungrouped_tabs: {
+                    sort_by: SortByOptions.RECENCY,
+                    ascending: true
+                },
+                tab_groups: {
+                    move_to: MoveToOptions.FRONT,
+                    sort_by: SortByOptions.RECENCY,
+                    ascending: true
+                }
+            });
         });
         mapkey(";att", "#3Arrange this window's Tabs by Title", () => {
-            RUNTIME("arrangeTabs", { sort_by: "title", ascending: true });
+            RUNTIME("arrangeTabs", {
+                ungrouped_tabs: {
+                    sort_by: SortByOptions.TITLE,
+                    ascending: true
+                },
+                tab_groups: {
+                    move_to: MoveToOptions.FRONT,
+                    sort_by: SortByOptions.TITLE,
+                    ascending: true
+                }
+            });
         });
         mapkey(";atu", "#3Arrange this window's Tabs by URL", () => {
-            RUNTIME("arrangeTabs", { sort_by: "url", ascending: true });
+            RUNTIME("arrangeTabs", {
+                ungrouped_tabs: {
+                    sort_by: SortByOptions.URL,
+                    ascending: true
+                },
+                tab_groups: {
+                    move_to: MoveToOptions.FRONT,
+                    sort_by: SortByOptions.TITLE,
+                    ascending: true
+                }
+            });
+        });
+        mapkey("ctw", "#5Count Tabs in current Window", () => {
+            RUNTIME("getTabs",
+                { queryInfo: { currentWindow: true }, tabsThreshold: 9999 },
+                (response) => {
+                    showBanner(`this window: ${response.tabs.length} tabs`);
+                }
+            );
         });
         mapkey('<<', '#3Move current tab to left', function() {
             RUNTIME('moveTab', {

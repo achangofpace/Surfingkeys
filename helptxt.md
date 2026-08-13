@@ -1,4 +1,6 @@
-# (0) Help
+# Categories
+
+## (0) Help
 
 - `<Alt-s>` Toggle SurfingKeys on current site
 - `<Alt-i>` Enter PassThrough mode to temporarily suppress SurfingKeys
@@ -7,7 +9,7 @@
 - `?` Show usage
 - `.` Repeat last action
 
-# (1) Mouse Click
+## (1) Mouse Click
 
 - `cf` Open multiple links in a new tab
 - `gi` Go to the first edit box
@@ -30,7 +32,7 @@
 - `<Ctrl-i>` Go to edit box with vim editor
 - `q` Click on an Image or a button
 
-# (2) Scroll Page / Element
+## (2) Scroll Page / Element
 
 - `0` Scroll all the way to the left
 - `cS` Reset scroll target
@@ -51,7 +53,7 @@
 - `w` Switch frames
 - `u` Scroll half page up
 
-# (3) Tabs
+## (3) Tabs
 
 - `yt` Duplicate current tab
 - `yT` Duplicate current tab in background
@@ -82,7 +84,7 @@
 - `<<` Move current tab to left
 - `>>` Move current tab to right
 
-# (4) Page Navigation
+## (4) Page Navigation
 
 - `gu` Go up one path in the URL
 - `gT` Go to first activated tab
@@ -99,7 +101,7 @@
 - `D` Go forward in history
 - `r` Reload the page
 
-# (5) Sessions
+## (5) Sessions
 
 - `cta` Count Tabs in All windows
 - `ctw` Count Tabs in current Window
@@ -107,7 +109,7 @@
 - `ZZ` Save session and quit
 - `ZR` Restore last session
 
-# (6) Search selected with
+## (6) Search selected with
 
 - `sg` Search selected with google
 - `sd` Search selected with duckduckgo
@@ -118,7 +120,7 @@
 - `sh` Search selected with github
 - `sy` Search selected with youtube
 
-# (7) Clipboard
+## (7) Clipboard
 
 - `yG` Capture current full page
 - `yS` Capture scrolling element
@@ -163,7 +165,7 @@
 - `;pf` Fill form with data from yf
 - `;cq` Clear all URLs in queue to be opened
 
-# (8) Omnibar
+## (8) Omnibar
 
 - `go` Open a URL in current tab
 - `Q` Open omnibar for word translation
@@ -202,7 +204,7 @@
 - `<ArrowDown>` Forward cycle through the input history.
 - `<ArrowUp>` Backward cycle through the input history.
 
-# (9) Visual Mode
+## (9) Visual Mode
 
 - `/` Find in current page
 - `zv` Enter visual mode, and select whole element
@@ -244,23 +246,23 @@
 - `t` Translate selected text with google
 - `q` Translate word under cursor
 
-# (10) vim-like marks
+## (10) vim-like marks
 
 - `m` Add current URL to vim-like marks
 - `'` Jump to vim-like mark
 - `<Ctrl-'>` Jump to vim-like mark in new tab.
 
-# (11) Settings
+## (11) Settings
 
 - `;pm` Preview markdown
 - `;e` Edit Settings
 
-# (12) Chrome URLs
+## (12) Chrome URLs
 
 - `gs` View page source
 - `;j` Close Downloads Shelf
 
-# (13) Misc
+## (13) Misc
 
 - `;ph` Put histories from clipboard
 - `;t` Translate selected text with google
@@ -271,7 +273,7 @@
 - `;otsm` Open Tab Session Manager
 - `oul` Open multiple URLs from clipboard
 
-# (14) Insert Mode
+## (14) Insert Mode
 
 - `<Ctrl-e>` Move the cursor to the end of the line
 - `<Ctrl-f>` Move the cursor to the beginning of the line
